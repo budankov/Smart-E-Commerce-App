@@ -27,7 +27,10 @@ const SingInScreen = () => {
         secureTextEntry
       />
       <AppText style={styles.appName}>Smart E-Commerce</AppText>
-      <AppButton title="Login" />
+      <AppButton
+        title="Login"
+        onPress={() => navigation.navigate("MainAppBottomTabs")}
+      />
       <AppButton
         title="Sing Up"
         style={styles.registerButton}
