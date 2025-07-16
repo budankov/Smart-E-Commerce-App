@@ -8,4 +8,5 @@ export const AppColors = {
   blueGray: "#E6E8EA",
   medGray: "#939393",
   borderColor: "#ccc",
+  redColor: "red",
 };

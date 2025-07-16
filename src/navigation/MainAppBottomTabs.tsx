@@ -25,7 +25,7 @@ export default function MainAppBottomTabs() {
       }}
     >
       <Tab.Screen
-        name="Home"
+        name="HomeScreen"
         component={HomeScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
@@ -35,7 +35,7 @@ export default function MainAppBottomTabs() {
         }}
       />
       <Tab.Screen
-        name="Cart"
+        name="CartScreen"
         component={CartScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
@@ -45,7 +45,7 @@ export default function MainAppBottomTabs() {
         }}
       />
       <Tab.Screen
-        name="Profile"
+        name="ProfileScreen"
         component={ProfileScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
