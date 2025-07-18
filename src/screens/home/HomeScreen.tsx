@@ -7,8 +7,12 @@ import data from "../../../node_modules/type-fest/source/readonly-deep.d";
 import { products } from "../../data/products";
 import ProductCard from "../../components/cards/ProductCard";
 import { s } from "react-native-size-matters";
+import { useDispatch } from "react-redux";
+import { addItemToCart } from "../../store/reducers/cartSlice";
 
 const HomeScreen = () => {
+  const dispatch = useDispatch();
+
   return (
     <AppSaveView>
       <HomeHeader />
@@ -21,7 +25,9 @@ const HomeScreen = () => {
             imageURL={item.imageURL}
             title={item.title}
             price={item.price}
-            onAddToCardPress={() => {}}
+            onAddToCardPress={() => {
+              dispatch(addItemToCart(item));
+            }}
           />
         )}
         columnWrapperStyle={{
