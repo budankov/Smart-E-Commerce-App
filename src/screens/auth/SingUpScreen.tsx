@@ -1,35 +1,104 @@
 import React, { useState } from "react";
-import { Image, StyleSheet } from "react-native";
+import { Alert, Image, StyleSheet } from "react-native";
 import AppSaveView from "../../components/views/AppSaveView";
 import { sharedPaddingHorizontal } from "../../styles/sharedStyles";
 import { IMAGES } from "../../constants/images-paths";
 import { s, vs } from "react-native-size-matters";
-import AppTextInput from "../../components/inputs/AppTextInput";
 import AppText from "../../components/texts/AppText";
 import AppButton from "../../components/buttons/AppButton";
-import { register } from "../../../node_modules/react-native/Libraries/Blob/BlobRegistry";
 import { AppColors } from "../../styles/colors";
-import { showMessage } from "react-native-flash-message";
 import { useNavigation } from "@react-navigation/native";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import AppTextInputController from "../../components/inputs/AppTextInputController";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../config/firebase";
+import data from "../../../node_modules/yup/node_modules/type-fest/source/readonly-deep.d";
+import { showMessage } from "react-native-flash-message";
+
+const schema = yup
+  .object({
+    userName: yup
+      .string()
+      .required("User name is required")
+      .min(5, "User name must be more than 5 characters"),
+
+    email: yup
+      .string()
+      .email("Please, enter a valid email")
+      .required("Email is required"),
+
+    password: yup
+      .string()
+      .required("Password is required")
+      .min(6, "Password must be at least 6 characters"),
+  })
+  .required();
+
+type FormData = yup.InferType<typeof schema>;
 
 const SingUpScreen = () => {
-  const [userName, setUserName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { control, handleSubmit } = useForm({
+    resolver: yupResolver(schema),
+  });
+
   const navigation = useNavigation();
+
+  const onSingUpPress = async (data: FormData) => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password
+      );
+
+      Alert.alert("User Created");
+      navigation.navigate("MainAppBottomTabs");
+      return userCredential.user;
+    } catch (error: any) {
+      let errorMessage = "";
+      if (error.code === "auth/email-already-in-use") {
+        errorMessage = "This email already in use";
+      } else if (error.code === "auth/invalid-email") {
+        errorMessage = "The email address is invalid";
+      } else if (error.code === "auth/weak-password") {
+        errorMessage = "The password is too weak";
+      } else {
+        errorMessage = "An error occurred during sing-up";
+      }
+
+      showMessage({
+        message: errorMessage,
+        type: "danger",
+      });
+    }
+  };
 
   return (
     <AppSaveView style={styles.container}>
       <Image source={IMAGES.appLogo} style={styles.logo} />
-      <AppTextInput placeholder="User Name" onChangeText={setUserName} />
-      <AppTextInput placeholder="Email" onChangeText={setEmail} />
-      <AppTextInput
+      <AppTextInputController
+        control={control}
+        name="userName"
+        placeholder="User Name"
+      />
+      <AppTextInputController
+        control={control}
+        name="email"
+        placeholder="Email"
+      />
+      <AppTextInputController
+        control={control}
+        name="password"
         placeholder="Password"
-        onChangeText={setPassword}
         secureTextEntry
       />
       <AppText style={styles.appName}>Smart E-Commerce</AppText>
-      <AppButton title="Create New Account" />
+      <AppButton
+        title="Create New Account"
+        onPress={handleSubmit(onSingUpPress)}
+      />
       <AppButton
         title="Go To Sing In"
         style={styles.singInButton}
