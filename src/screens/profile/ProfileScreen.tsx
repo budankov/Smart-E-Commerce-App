@@ -14,9 +14,6 @@ const ProfileScreen = () => {
   return (
     <AppSaveView>
       <HomeHeader />
-      <AppText variant="bold" style={{ margin: vs(10) }}>
-        Hello, Kostya
-      </AppText>
       <View style={{ paddingHorizontal: sharedPaddingHorizontal }}>
         <ProfileSectionButton
           title={"My Orders"}

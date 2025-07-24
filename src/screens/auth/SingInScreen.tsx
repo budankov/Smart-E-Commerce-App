@@ -15,6 +15,8 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../config/firebase";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../../store/reducers/userSlice";
 
 const schema = yup
   .object({
@@ -38,6 +40,7 @@ const SingInScreen = () => {
   });
 
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const onLoginPress = async (data: FormData) => {
     try {
@@ -47,7 +50,12 @@ const SingInScreen = () => {
         data.password
       );
       navigation.navigate("MainAppBottomTabs");
-      console.log(userCredential);
+
+      const userDataObj = {
+        uid: userCredential.user.uid,
+      };
+
+      dispatch(setUserData(userDataObj));
     } catch (error: any) {
       let errorMessage = "";
       if (error.code === "auth/user-not-found") {

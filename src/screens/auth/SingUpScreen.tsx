@@ -16,6 +16,8 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../config/firebase";
 import data from "../../../node_modules/yup/node_modules/type-fest/source/readonly-deep.d";
 import { showMessage } from "react-native-flash-message";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../../store/reducers/userSlice";
 
 const schema = yup
   .object({
@@ -44,6 +46,7 @@ const SingUpScreen = () => {
   });
 
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const onSingUpPress = async (data: FormData) => {
     try {
@@ -55,7 +58,12 @@ const SingUpScreen = () => {
 
       Alert.alert("User Created");
       navigation.navigate("MainAppBottomTabs");
-      return userCredential.user;
+
+      const userDataObj = {
+        uid: userCredential.user.uid,
+      };
+
+      dispatch(setUserData(userDataObj));
     } catch (error: any) {
       let errorMessage = "";
       if (error.code === "auth/email-already-in-use") {

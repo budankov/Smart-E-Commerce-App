@@ -8,11 +8,23 @@ import {
 import { s, vs } from "react-native-size-matters";
 import { AppColors } from "../../styles/colors";
 import AppButton from "../../components/buttons/AppButton";
-import { IS_ANDROID, IS_IOS } from "../../constants/constants";
+import {
+  IS_ANDROID,
+  IS_IOS,
+  shippingFees,
+  taxes,
+} from "../../constants/constants";
 import AppTextInputController from "../../components/inputs/AppTextInputController";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../store/store";
+import { addDoc, collection, doc } from "firebase/firestore";
+import { db } from "../../config/firebase";
+import { showMessage } from "react-native-flash-message";
+import { useNavigation } from "@react-navigation/native";
+import { emptyCart } from "../../store/reducers/cartSlice";
 
 const schema = yup
   .object({
@@ -44,8 +56,41 @@ const CheckOutScreen = () => {
     resolver: yupResolver(schema),
   });
 
-  const saveOrder = (formData: FormData) => {
-    console.log(formData);
+  const navigate = useNavigation();
+  const dispatch = useDispatch();
+
+  const { userData } = useSelector((state: RootState) => state.userSlice);
+  const { items } = useSelector((state: RootState) => state.cartSlice);
+  const totalProductsPricesSum = items.reduce((acc, item) => acc + item.sum, 0);
+  const totalPrice = totalProductsPricesSum + shippingFees + taxes;
+
+  console.log("=======================================================");
+  console.log(JSON.stringify(userData, null, 3));
+  console.log("=======================================================");
+
+  const saveOrder = async (formData: FormData) => {
+    try {
+      const orderBody = {
+        ...formData,
+        items,
+        totalProductsPricesSum,
+        createdAt: new Date(),
+        totalPrice,
+      };
+
+      const userOrderRef = collection(doc(db, "users", userData.uid), "orders");
+      await addDoc(userOrderRef, orderBody);
+
+      const ordersRef = collection(db, "orders");
+      await addDoc(ordersRef, orderBody);
+
+      showMessage({ type: "success", message: "Order Places Successfully" });
+      navigate.goBack();
+      dispatch(emptyCart());
+    } catch (error) {
+      console.error("Error saving order:", error);
+      showMessage({ type: "danger", message: "Error Happen" });
+    }
   };
 
   return (

@@ -31,7 +31,6 @@ const OrderItem: React.FC<OrderItemProps> = ({
           <AppText style={styles.totalAmount}>
             {Math.abs(totalAmount).toFixed(2)} $
           </AppText>
-          <AppText style={styles.date}>{date}</AppText>
         </View>
       </View>
     </View>
