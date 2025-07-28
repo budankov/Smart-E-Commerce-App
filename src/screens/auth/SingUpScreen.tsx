@@ -18,29 +18,30 @@ import data from "../../../node_modules/yup/node_modules/type-fest/source/readon
 import { showMessage } from "react-native-flash-message";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../../store/reducers/userSlice";
-
-const schema = yup
-  .object({
-    userName: yup
-      .string()
-      .required("User name is required")
-      .min(5, "User name must be more than 5 characters"),
-
-    email: yup
-      .string()
-      .email("Please, enter a valid email")
-      .required("Email is required"),
-
-    password: yup
-      .string()
-      .required("Password is required")
-      .min(6, "Password must be at least 6 characters"),
-  })
-  .required();
+import { useTranslation } from "react-i18next";
 
 type FormData = yup.InferType<typeof schema>;
 
 const SingUpScreen = () => {
+  const { t } = useTranslation();
+
+  const schema = yup
+    .object({
+      userName: yup
+        .string()
+        .required(t("sign_up_username_required"))
+        .min(5, t("sign_up_username_min_length")),
+      email: yup
+        .string()
+        .email(t("sign_up_email_invalid"))
+        .required(t("sign_up_email_required")),
+      password: yup
+        .string()
+        .required(t("sign_up_password_required"))
+        .min(6, t("sign_up_password_min_length")),
+    })
+    .required();
+
   const { control, handleSubmit } = useForm({
     resolver: yupResolver(schema),
   });
@@ -56,7 +57,7 @@ const SingUpScreen = () => {
         data.password
       );
 
-      Alert.alert("User Created");
+      Alert.alert(t("sign_up_success"));
       navigation.navigate("MainAppBottomTabs");
 
       const userDataObj = {
@@ -67,13 +68,13 @@ const SingUpScreen = () => {
     } catch (error: any) {
       let errorMessage = "";
       if (error.code === "auth/email-already-in-use") {
-        errorMessage = "This email already in use";
+        errorMessage = t("sign_up_error_email_in_use");
       } else if (error.code === "auth/invalid-email") {
-        errorMessage = "The email address is invalid";
+        errorMessage = t("sign_up_error_invalid_email");
       } else if (error.code === "auth/weak-password") {
-        errorMessage = "The password is too weak";
+        errorMessage = t("sign_up_error_weak_password");
       } else {
-        errorMessage = "An error occurred during sing-up";
+        errorMessage = t("sign_up_error_default");
       }
 
       showMessage({
@@ -89,26 +90,26 @@ const SingUpScreen = () => {
       <AppTextInputController
         control={control}
         name="userName"
-        placeholder="User Name"
+        placeholder={t("sign_up_username_placeholder")}
       />
       <AppTextInputController
         control={control}
         name="email"
-        placeholder="Email"
+        placeholder={t("sign_up_email_placeholder")}
       />
       <AppTextInputController
         control={control}
         name="password"
-        placeholder="Password"
+        placeholder={t("sign_up_password_placeholder")}
         secureTextEntry
       />
       <AppText style={styles.appName}>Smart E-Commerce</AppText>
       <AppButton
-        title="Create New Account"
+        title={t("sign_up_create_account_button")}
         onPress={handleSubmit(onSingUpPress)}
       />
       <AppButton
-        title="Go To Sing In"
+        title={t("sign_up_goto_signin_button")}
         style={styles.singInButton}
         textColor={AppColors.primary}
         onPress={() => navigation.navigate("SingInScreen")}

@@ -17,24 +17,26 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../config/firebase";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../../store/reducers/userSlice";
-
-const schema = yup
-  .object({
-    email: yup
-      .string()
-      .email("Please, enter a valid email")
-      .required("Email is required"),
-
-    password: yup
-      .string()
-      .required("Password is required")
-      .min(6, "Password must be at least 6 characters"),
-  })
-  .required();
+import { useTranslation } from "react-i18next";
 
 type FormData = yup.InferType<typeof schema>;
 
 const SingInScreen = () => {
+  const { t } = useTranslation();
+
+  const schema = yup
+    .object({
+      email: yup
+        .string()
+        .email(t("sign_in_email_invalid"))
+        .required(t("sign_in_email_required")),
+      password: yup
+        .string()
+        .required(t("sign_in_password_required"))
+        .min(6, t("sign_in_password_min_length")),
+    })
+    .required();
+
   const { control, handleSubmit } = useForm({
     resolver: yupResolver(schema),
   });
@@ -59,11 +61,11 @@ const SingInScreen = () => {
     } catch (error: any) {
       let errorMessage = "";
       if (error.code === "auth/user-not-found") {
-        errorMessage = "User not found";
+        errorMessage = t("sign_in_error_user_not_found");
       } else if (error.code === "auth/invalid-credential") {
-        errorMessage = "Wrong email or password";
+        errorMessage = t("sign_in_error_invalid_credential");
       } else {
-        errorMessage = "An error occurred during sing-in";
+        errorMessage = t("sign_in_error_default");
       }
 
       showMessage({
@@ -79,18 +81,21 @@ const SingInScreen = () => {
       <AppTextInputController<FormData>
         control={control}
         name="email"
-        placeholder="Email"
+        placeholder={t("sign_in_email_placeholder")}
       />
       <AppTextInputController<FormData>
         control={control}
         name="password"
-        placeholder="Password"
+        placeholder={t("sign_in_password_placeholder")}
         secureTextEntry
       />
       <AppText style={styles.appName}>Smart E-Commerce</AppText>
-      <AppButton title="Login" onPress={handleSubmit(onLoginPress)} />
       <AppButton
-        title="Sing Up"
+        title={t("sign_in_login_button")}
+        onPress={handleSubmit(onLoginPress)}
+      />
+      <AppButton
+        title={t("sign_in_signup_button")}
         style={styles.registerButton}
         textColor={AppColors.primary}
         onPress={() => navigation.navigate("SingUpScreen")}

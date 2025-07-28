@@ -1,26 +1,40 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import AppSaveView from "../../components/views/AppSaveView";
 import HomeHeader from "../../components/headers/HomeHeader";
 import ProfileSectionButton from "../../components/buttons/ProfileSectionButton";
 import { sharedPaddingHorizontal } from "../../styles/sharedStyles";
-import AppText from "../../components/texts/AppText";
 import { vs } from "react-native-size-matters";
 import { useNavigation } from "@react-navigation/native";
+import { SheetManager } from "react-native-actions-sheet";
+import LanguageBottomSheet from "../../components/language/LanguageBottomSheet";
+import { useTranslation } from "react-i18next";
 
 const ProfileScreen = () => {
+  const { t } = useTranslation();
   const navigation = useNavigation();
+
+  const handleLogout = () => {
+    // Add logout logic here
+  };
 
   return (
     <AppSaveView>
       <HomeHeader />
       <View style={{ paddingHorizontal: sharedPaddingHorizontal }}>
         <ProfileSectionButton
-          title={"My Orders"}
+          title={t("profile_my_orders")}
           onPress={() => navigation.navigate("MyOrdersScreen")}
         />
-        <ProfileSectionButton title={"Language"} onPress={"text"} />
-        <ProfileSectionButton title={"Logout"} onPress={"text"} />
+        <ProfileSectionButton
+          title={t("profile_language")}
+          onPress={() => SheetManager.show("LANG_SHEET")}
+        />
+        <LanguageBottomSheet />
+        <ProfileSectionButton
+          title={t("profile_logout")}
+          onPress={handleLogout}
+        />
       </View>
     </AppSaveView>
   );

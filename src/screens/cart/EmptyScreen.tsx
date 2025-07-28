@@ -7,8 +7,10 @@ import { AppColors } from "../../styles/colors";
 import AppButton from "../../components/buttons/AppButton";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 
 const EmptyScreen = () => {
+  const { t } = useTranslation();
   const navigation = useNavigation();
 
   return (
@@ -19,12 +21,10 @@ const EmptyScreen = () => {
         color={AppColors.primary}
         style={styles.icon}
       />
-      <AppText style={styles.title}>You Cart Is Empty!</AppText>
-      <AppText style={styles.subTitle}>
-        Browse our products and find something you like.
-      </AppText>
+      <AppText style={styles.title}>{t("empty_cart_title")}</AppText>
+      <AppText style={styles.subTitle}>{t("empty_cart_subtitle")}</AppText>
       <AppButton
-        title="Start Shopping"
+        title={t("start_shopping")}
         style={styles.button}
         onPress={() => {
           navigation.navigate("HomeScreen");
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     fontFamily: AppFonts.Medium,
     color: AppColors.medGray,
     textAlign: "center",
-    marginBottom: vs(20),
+    marginBottom: vs(10),
   },
   button: {
     width: "80%",

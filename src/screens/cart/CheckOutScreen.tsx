@@ -25,33 +25,33 @@ import { db } from "../../config/firebase";
 import { showMessage } from "react-native-flash-message";
 import { useNavigation } from "@react-navigation/native";
 import { emptyCart } from "../../store/reducers/cartSlice";
-
-const schema = yup
-  .object({
-    fullName: yup
-      .string()
-      .required("Name is required")
-      .min(3, "Name must be at least 3 characters"),
-
-    phoneNumber: yup
-      .string()
-      .required("Phone number is required")
-      .matches(/^[0-9]+$/, "Must be only digits")
-      .min(10, "Phone number must be at least 10 digits"),
-
-    detailedAddress: yup
-      .string()
-      .required("Address is required")
-      .min(
-        15,
-        "Please, provide a detailed address with at least 15 characters"
-      ),
-  })
-  .required();
+import { useTranslation } from "react-i18next";
 
 type FormData = yup.InferType<typeof schema>;
 
 const CheckOutScreen = () => {
+  const { t } = useTranslation();
+
+  const schema = yup
+    .object({
+      fullName: yup
+        .string()
+        .required(t("checkout_name_required"))
+        .min(3, t("checkout_name_min_length")),
+
+      phoneNumber: yup
+        .string()
+        .required(t("checkout_phone_required"))
+        .matches(/^[0-9]+$/, t("checkout_phone_digits"))
+        .min(10, t("checkout_phone_min_length")),
+
+      detailedAddress: yup
+        .string()
+        .required(t("checkout_address_required"))
+        .min(15, t("checkout_address_min_length")),
+    })
+    .required();
+
   const { control, handleSubmit } = useForm({
     resolver: yupResolver(schema),
   });
@@ -63,10 +63,6 @@ const CheckOutScreen = () => {
   const { items } = useSelector((state: RootState) => state.cartSlice);
   const totalProductsPricesSum = items.reduce((acc, item) => acc + item.sum, 0);
   const totalPrice = totalProductsPricesSum + shippingFees + taxes;
-
-  console.log("=======================================================");
-  console.log(JSON.stringify(userData, null, 3));
-  console.log("=======================================================");
 
   const saveOrder = async (formData: FormData) => {
     try {
@@ -84,12 +80,11 @@ const CheckOutScreen = () => {
       const ordersRef = collection(db, "orders");
       await addDoc(ordersRef, orderBody);
 
-      showMessage({ type: "success", message: "Order Places Successfully" });
+      showMessage({ type: "success", message: t("checkout_success_message") });
       navigate.goBack();
       dispatch(emptyCart());
     } catch (error) {
-      console.error("Error saving order:", error);
-      showMessage({ type: "danger", message: "Error Happen" });
+      showMessage({ type: "danger", message: t("checkout_error_message") });
     }
   };
 
@@ -100,22 +95,25 @@ const CheckOutScreen = () => {
           <AppTextInputController
             control={control}
             name={"fullName"}
-            placeholder="Full name"
+            placeholder={t("checkout_fullname_placeholder")}
           />
           <AppTextInputController
             control={control}
             name={"phoneNumber"}
-            placeholder="Phone number"
+            placeholder={t("checkout_phone_placeholder")}
           />
           <AppTextInputController
             control={control}
             name={"detailedAddress"}
-            placeholder="Detailed Address"
+            placeholder={t("checkout_address_placeholder")}
           />
         </View>
       </View>
       <View style={styles.bottomButtonContainer}>
-        <AppButton title="Confirm" onPress={handleSubmit(saveOrder)} />
+        <AppButton
+          title={t("confirm_button")}
+          onPress={handleSubmit(saveOrder)}
+        />
       </View>
     </AppSaveView>
   );

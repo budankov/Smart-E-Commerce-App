@@ -5,6 +5,7 @@ import AppText from "../texts/AppText";
 import { AppColors } from "../../styles/colors";
 import { AppFonts } from "../../styles/fonts";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 
 interface CartItemProps {
   title: string;
@@ -25,6 +26,8 @@ const CartItem: React.FC<CartItemProps> = ({
   onIncreasePress,
   onReducePress,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <View style={styles.container}>
       {/* Image Container */}
@@ -34,7 +37,9 @@ const CartItem: React.FC<CartItemProps> = ({
       {/* Details Container */}
       <View style={styles.detailsContainer}>
         <AppText style={styles.textTitle}>{title}</AppText>
-        <AppText style={styles.textPrice}>{price}$</AppText>
+        <AppText style={styles.textPrice}>
+          {price} {t("totals_currency")}
+        </AppText>
         <View style={styles.qtyContainer}>
           <Pressable style={styles.iconButton} onPress={onIncreasePress}>
             <FontAwesome name="plus" size={s(10)} color={AppColors.primary} />
@@ -49,7 +54,7 @@ const CartItem: React.FC<CartItemProps> = ({
       <View style={styles.deleteContainer}>
         <Pressable style={styles.deleteButton} onPress={onDeletePress}>
           <AntDesign name="delete" size={s(14)} color={AppColors.redColor} />
-          <AppText style={styles.deleteText}>Delete</AppText>
+          <AppText style={styles.deleteText}>{t("delete_button")}</AppText>
         </Pressable>
       </View>
     </View>
@@ -70,12 +75,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   detailsContainer: {
-    flex: 3.5,
+    flex: 2,
   },
   deleteContainer: {
     flex: 1,
     justifyContent: "flex-end",
-    paddingEnd: s(12),
+    paddingEnd: s(16),
   },
   image: {
     height: s(80),

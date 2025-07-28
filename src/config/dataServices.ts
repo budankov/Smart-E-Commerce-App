@@ -1,5 +1,8 @@
 import { collection, doc, getDocs } from "firebase/firestore";
 import { auth, db } from "./firebase";
+import { showMessage } from "react-native-flash-message";
+import { useTranslation } from "react-i18next";
+import i18n from "../localization/i18n";
 
 export const getProductsData = async () => {
   try {
@@ -12,7 +15,10 @@ export const getProductsData = async () => {
 
     return list;
   } catch (error) {
-    console.error("Error fetching data:", error);
+    showMessage({
+      type: "danger",
+      message: i18n.t("massage_error_fetching_data"),
+    });
   }
 };
 
@@ -27,6 +33,9 @@ export const fetchUserOrders = async () => {
     }));
     return orderList;
   } catch (error) {
-    console.error("Error fetching orders:", error);
+    showMessage({
+      type: "danger",
+      message: i18n.t("massage_error_fetching_orders"),
+    });
   }
 };

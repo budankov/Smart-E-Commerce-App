@@ -4,6 +4,7 @@ import AppText from "../texts/AppText";
 import { commonStyles } from "../../styles/sharedStyles";
 import { AppColors } from "../../styles/colors";
 import { s } from "react-native-size-matters";
+import { useTranslation } from "react-i18next";
 
 interface OrderItemProps {
   date: string;
@@ -18,18 +19,24 @@ const OrderItem: React.FC<OrderItemProps> = ({
   totalAmount,
   totalPrice,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <View style={[styles.container, style]}>
-      <AppText style={styles.title}>Order Details:</AppText>
+      <AppText style={styles.title}>{t("order_details_title")}</AppText>
       <View style={styles.divider} />
       <View style={styles.summaryContainer}>
         <View>
-          <AppText>Total Price: {totalPrice}</AppText>
-          <AppText>Date: {date}</AppText>
+          <AppText>
+            {t("order_total_price")} {totalPrice}
+          </AppText>
+          <AppText>
+            {t("order_date")} {date}
+          </AppText>
         </View>
         <View style={styles.amountContainer}>
           <AppText style={styles.totalAmount}>
-            {Math.abs(totalAmount).toFixed(2)} $
+            {Math.abs(totalAmount).toFixed(2)} {t("totals_currency")}
           </AppText>
         </View>
       </View>

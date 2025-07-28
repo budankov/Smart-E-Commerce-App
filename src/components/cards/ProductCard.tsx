@@ -6,6 +6,7 @@ import AppText from "../texts/AppText";
 import { AppFonts } from "../../styles/fonts";
 import { Ionicons } from "@expo/vector-icons";
 import { commonStyles } from "../../styles/sharedStyles";
+import { useTranslation } from "react-i18next";
 
 interface ProductCardProps {
   onAddToCardPress: () => void;
@@ -20,6 +21,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   title,
   price,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
@@ -41,7 +44,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {/* Details */}
       <View style={styles.detailsContainer}>
         <AppText style={styles.titleText}>{title}</AppText>
-        <AppText style={styles.priceText}>{price}$</AppText>
+        <AppText style={styles.priceText}>
+          {price} {t("totals_currency")}
+        </AppText>
       </View>
     </View>
   );
