@@ -9,13 +9,15 @@ import { useNavigation } from "@react-navigation/native";
 import { SheetManager } from "react-native-actions-sheet";
 import LanguageBottomSheet from "../../components/language/LanguageBottomSheet";
 import { useTranslation } from "react-i18next";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ProfileScreen = () => {
   const { t } = useTranslation();
   const navigation = useNavigation();
 
-  const handleLogout = () => {
-    // Add logout logic here
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem("USER_DATA");
+    navigation.navigate("AuthStack");
   };
 
   return (

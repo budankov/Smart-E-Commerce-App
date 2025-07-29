@@ -21,7 +21,6 @@ const LanguageBottomSheet = () => {
   const handleConfirm = () => {
     SheetManager.hide("LANG_SHEET");
     i18n.changeLanguage(selectedLang);
-    console.log(selectedLang);
   };
 
   return (
