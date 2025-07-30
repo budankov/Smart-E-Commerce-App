@@ -1,44 +1,35 @@
+import { onAuthStateChanged } from "@firebase/auth";
 import { createStackNavigator } from "@react-navigation/stack";
-import AuthStack from "./AuthStack";
-import MainAppBottomTabs from "./MainAppBottomTabs";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { ActivityIndicator, View } from "react-native";
+import { auth } from "../config/firebase";
 import CheckOutScreen from "../screens/cart/CheckOutScreen";
 import MyOrdersScreen from "../screens/profile/MyOrdersScreen";
-import { useTranslation } from "react-i18next";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useDispatch, useSelector } from "react-redux";
-import { setUserData, setLoading } from "../store/reducers/userSlice";
-import { useEffect } from "react";
-import { RootState } from "../store/store";
-import { ActivityIndicator, View } from "react-native";
 import { AppColors } from "../styles/colors";
+import AuthStack from "./AuthStack";
+import MainAppBottomTabs from "./MainAppBottomTabs";
 
 const Stack = createStackNavigator();
 
 export default function MainAppStack() {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [userData, setUserData] = useState<object | null>(null);
+
   const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const { userData, isLoading } = useSelector(
-    (state: RootState) => state.userSlice
-  );
-
-  const isUserLoggedIn = async () => {
-    try {
-      const storedUserData = await AsyncStorage.getItem("USER_DATA");
-
-      if (storedUserData) {
-        dispatch(setUserData(JSON.parse(storedUserData)));
-      } else {
-        dispatch(setLoading(false));
-      }
-    } catch (error) {
-      console.error("Error reading stored user", error);
-      dispatch(setLoading(false));
-    }
-  };
 
   useEffect(() => {
-    isUserLoggedIn();
-  }, []);
+    onAuthStateChanged(auth, (userDataFromFireBase) => {
+      if (userDataFromFireBase) {
+        console.log("User is Signed In");
+        setIsLoading(false);
+        setUserData(userDataFromFireBase);
+      } else {
+        console.log("User is Signed Out");
+        setIsLoading(false);
+      }
+    });
+  });
 
   if (isLoading) {
     return (
